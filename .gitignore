@@ -41,8 +41,3 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
-
-# sqlite db + uploaded assets — not source, shouldn't be committed
-/dev.db
-/dev.db-journal
-/public/uploads

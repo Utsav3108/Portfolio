@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -27,11 +26,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
   }
 
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const filename = `${randomUUID()}.${extension}`;
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploadsDir, { recursive: true });
-  await writeFile(path.join(uploadsDir, filename), bytes);
+  const filename = `uploads/${randomUUID()}.${extension}`;
+  const blob = await put(filename, file, {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: file.type,
+  });
 
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  return NextResponse.json({ url: blob.url });
 }
