@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Singleton row (id is always 1) holding the hero/profile copy for the
+// public site — everything editable from /admin/profile, /admin/stats,
+// and /admin/practice.
+model SiteContent {
+  id           Int      @id @default(1)
+  name         String
+  role         String
+  location     String
+  email        String
+  github       String
+  twitter      String
+  photoUrl     String?
+  heroEyebrow  String
+  heroHeadline String
+  heroIntro    String
+  stackChips   Json // string[]
+  stats        Json // { value: string, label: string }[]
+  practice     Json // { category: string, items: string[] }[]
+  updatedAt    DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  tagline     String
+  description String
+  stack       Json // string[]
+  status      String?
+  isFlagship  Boolean  @default(false)
+  links       Json // { label: string, href: string }[]
+  order       Int      @default(0)
+  whyItMatters String? // optional "Why it matters" callout; empty by default
+  phases      Phase[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Dispatch-tracker milestones for a project's "In Transit" section on the
+// public site. `completed` is enforced (server + admin UI) to always form
+// a prefix over `order` — you can't complete phase 3 without 1 and 2.
+model Phase {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  code      String
+  title     String
+  detail    String
+  completed Boolean @default(false)
+  order     Int     @default(0)
+}

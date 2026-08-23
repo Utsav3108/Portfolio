@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #ECEAE4;
+  --bg-raised: #F8F7F3;
+  --bg-sunken: #DFDCD3;
+  --text: #191D22;
+  --text-dim: #565C64;
+  --border: #D2CFC5;
+  --accent: #A8641E;
+  --accent2: #35678A;
+  --code-bg: #E1DED3;
+  --accent-soft: rgba(168, 100, 30, 0.10);
+  --shadow: rgba(25, 29, 34, 0.08);
+
+  --font-mono-stack: ui-monospace, "SF Mono", "SFMono-Regular", "IBM Plex Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-serif-stack: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #10141A;
+    --bg-raised: #191F27;
+    --bg-sunken: #0B0E12;
+    --text: #E9E5DC;
+    --text-dim: #8B93A0;
+    --border: #2A313C;
+    --accent: #E8A33D;
+    --accent2: #74A6CC;
+    --code-bg: #1C222B;
+    --accent-soft: rgba(232, 163, 61, 0.14);
+    --shadow: rgba(0, 0, 0, 0.35);
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #ECEAE4;
+  --bg-raised: #F8F7F3;
+  --bg-sunken: #DFDCD3;
+  --text: #191D22;
+  --text-dim: #565C64;
+  --border: #D2CFC5;
+  --accent: #A8641E;
+  --accent2: #35678A;
+  --code-bg: #E1DED3;
+  --accent-soft: rgba(168, 100, 30, 0.10);
+  --shadow: rgba(25, 29, 34, 0.08);
+}
+
+:root[data-theme="dark"] {
+  --bg: #10141A;
+  --bg-raised: #191F27;
+  --bg-sunken: #0B0E12;
+  --text: #E9E5DC;
+  --text-dim: #8B93A0;
+  --border: #2A313C;
+  --accent: #E8A33D;
+  --accent2: #74A6CC;
+  --code-bg: #1C222B;
+  --accent-soft: rgba(232, 163, 61, 0.14);
+  --shadow: rgba(0, 0, 0, 0.35);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --color-code-bg: var(--code-bg);
+  --color-accent-soft: var(--accent-soft);
+  --font-mono: var(--font-mono-stack);
+  --font-serif: var(--font-serif-stack);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-serif-stack);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes beacon-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.06); }
+}
+
+.beacon-glow {
+  animation: beacon-pulse 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beacon-glow {
+    animation: none;
+  }
+}
