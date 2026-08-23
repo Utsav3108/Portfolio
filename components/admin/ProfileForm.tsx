@@ -48,7 +48,12 @@ export default function ProfileForm({ initial }: { initial: ProfileValue }) {
     setUploading(false);
 
     if (!res.ok) {
-      setError("Photo upload failed — check the file is a PNG/JPEG/WebP under 5MB.");
+      const body = await res.json().catch(() => null);
+      setError(
+        typeof body?.error === "string"
+          ? `Photo upload failed: ${body.error}`
+          : "Photo upload failed — an unexpected error occurred.",
+      );
       return;
     }
     const body = await res.json();

@@ -27,7 +27,7 @@ npm run db:seed         # first time only — seeds it from the original copy
 npm run dev
 ```
 
-For photo uploads to work in dev, create a Blob store (Vercel dashboard → Storage) and put its token in `BLOB_READ_WRITE_TOKEN` in `.env`. Everything else works without it.
+For photo uploads to work in dev, create a Blob store (Vercel dashboard → Storage) and copy both `BLOB_READ_WRITE_TOKEN_STORE_ID` and `BLOB_READ_WRITE_TOKEN_READ_WRITE_TOKEN` into `.env` (those are Vercel's actual generated var names, not the plain `BLOB_READ_WRITE_TOKEN` the SDK defaults to). On Vercel, OIDC + `storeId` is what's actually used for auth; locally there's no OIDC, so the SDK falls back to the token — the upload route passes both so the same code works in both places. Everything else works without it.
 
 Public site: http://localhost:3000
 Admin: http://localhost:3000/admin/login — credentials are in `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD_HASH_B64`, base64-encoded bcrypt hash — see the comment in `.env` for why it's not a plain hash).
@@ -36,7 +36,7 @@ Admin: http://localhost:3000/admin/login — credentials are in `.env` (`ADMIN_E
 
 One deployment — the admin panel and its API routes ship as part of the same Next.js app, there's no separate backend to host. In the Vercel project settings (**not** in local `.env`):
 
-1. Connect a **production** Postgres store (Neon, via the Storage tab) and a **production** Blob store — separate from your local Docker DB — this auto-injects `DATABASE_URL` / `BLOB_READ_WRITE_TOKEN` as production env vars, scoped to Vercel only. Use Neon's *pooled* connection string (not the direct one) since Vercel functions are serverless — the standard `pg` adapter needs pooling to avoid connection exhaustion under concurrent requests.
+1. Connect a **production** Postgres store (Neon, via the Storage tab) and a **production** Blob store — separate from your local Docker DB — this auto-injects `DATABASE_URL` / `BLOB_READ_WRITE_TOKEN_STORE_ID` / `BLOB_READ_WRITE_TOKEN_READ_WRITE_TOKEN` as production env vars, scoped to Vercel only. Use Neon's *pooled* connection string (not the direct one) since Vercel functions are serverless — the standard `pg` adapter needs pooling to avoid connection exhaustion under concurrent requests.
 2. Set `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH_B64`, `SESSION_SECRET` as production env vars too (same values as local, or rotate them — your call).
 3. Deploy. Run `npx prisma migrate deploy` once (with the production `DATABASE_URL` set in your shell, *not* the Docker one from local `.env`) to apply the schema, then `npm run db:seed` against it if it's a fresh database.
 

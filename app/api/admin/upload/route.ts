@@ -27,11 +27,29 @@ export async function POST(request: NextRequest) {
   }
 
   const filename = `uploads/${randomUUID()}.${extension}`;
-  const blob = await put(filename, file, {
-    access: "public",
-    addRandomSuffix: false,
-    contentType: file.type,
-  });
 
-  return NextResponse.json({ url: blob.url });
+  // On Vercel, OIDC auth is available automatically — passing storeId is
+  // enough, and it's what actually gets used there (the SDK ignores
+  // `token` whenever OIDC + storeId are both present). Locally there's no
+  // OIDC token, so the SDK falls back to `token` instead. Passing both
+  // covers prod and local dev with the same code path.
+  const storeId = process.env.BLOB_READ_WRITE_TOKEN_STORE_ID;
+  const token = process.env.BLOB_READ_WRITE_TOKEN_READ_WRITE_TOKEN;
+  if (!storeId && !token) {
+    return NextResponse.json({ error: "Blob storage is not configured" }, { status: 500 });
+  }
+
+  try {
+    const blob = await put(filename, file, {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: file.type,
+      storeId,
+      token,
+    });
+    return NextResponse.json({ url: blob.url });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown storage error";
+    return NextResponse.json({ error: `Blob storage error: ${message}` }, { status: 502 });
+  }
 }
